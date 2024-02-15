@@ -5,19 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b7cdcb45-9cca-4ce9-bac1-41a60d5ced76" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/components/Header.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/prisma.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/api/auth/[...nextauth].ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/prisma/schema.prisma" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/Canvas.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/Queue.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/codeforces.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/colors.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/api/create-queue.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/api/get-user-queues.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/api/get-user.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Header.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/next.config.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.mjs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/_app.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/pages/_app.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/_document.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/pages/_document.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/api/auth/[...nextauth].ts" beforeDir="false" afterPath="$PROJECT_DIR$/pages/api/auth/[...nextauth].ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pages/api/hello.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pages/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/pages/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/schema.prisma" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/styles/globals.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tailwind.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -86,7 +88,12 @@
       <updated>1707882709448</updated>
       <workItem from="1707882710469" duration="469000" />
       <workItem from="1707883193566" duration="1783000" />
-      <workItem from="1707930033202" duration="3888000" />
+      <workItem from="1707930033202" duration="3934000" />
+      <workItem from="1707937439641" duration="2276000" />
+      <workItem from="1707949122443" duration="14664000" />
+      <workItem from="1707968746489" duration="4136000" />
+      <workItem from="1707972976574" duration="35000" />
+      <workItem from="1707973018581" duration="1450000" />
     </task>
     <servers />
   </component>

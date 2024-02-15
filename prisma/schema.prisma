@@ -10,21 +10,33 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
-model DailyProblem {
-  id          String   @id @default(cuid())
-  contestId   Int
-  index       String
+model Queue {
+  id     String      @id @default(cuid())
+  name   String
+  items  QueueItem[]
+  canAdd Boolean
+
+  dateCreated DateTime @default(now())
+
+  userId String @map("user_id")
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model QueueItem {
+  id          String    @id @default(cuid())
   name        String
-  rating      Int
-  tags        String[]
-  solvedCount Int
+  description String?
+  deadline    DateTime?
+  link        String?
+  color       Int
 
-  userId String   @map("user_id")
-  date   DateTime @default(now())
-  status Int      @default(0)
-  User   User     @relation(fields: [userId], references: [id])
+  dateCreated DateTime @default(now())
+  status      Int      @default(0) // 0 - not started, 1 - in progress, 2 - done
 
-  @@unique([date, userId])
+  queueId String @map("queue_id")
+  userId  String @map("user_id")
+  Queue   Queue  @relation(fields: [queueId], references: [id], onDelete: Cascade)
+  User    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Account {
@@ -57,14 +69,15 @@ model Session {
 }
 
 model User {
-  id            String         @id @default(cuid())
+  id            String      @id @default(cuid())
   name          String?
-  email         String?        @unique
+  email         String?     @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
-  dailyProblems DailyProblem[]
+  queues        Queue[]
+  queueItems    QueueItem[]
 }
 
 model VerificationToken {
