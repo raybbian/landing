@@ -5,14 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b7cdcb45-9cca-4ce9-bac1-41a60d5ced76" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/components/QueueItem.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/api/create-queue-item.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/api/get-queue-items.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/sorting.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/api/delete-queue.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/Canvas.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Canvas.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/Queue.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Queue.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/colors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/colors.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/api/create-queue.ts" beforeDir="false" afterPath="$PROJECT_DIR$/pages/api/create-queue.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/QueueItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/QueueItem.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/prisma.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/prisma.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/api/create-queue-item.ts" beforeDir="false" afterPath="$PROJECT_DIR$/pages/api/create-queue-item.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,7 +87,9 @@
       <workItem from="1707972976574" duration="35000" />
       <workItem from="1707973018581" duration="1580000" />
       <workItem from="1708023563742" duration="18211000" />
-      <workItem from="1708049253510" duration="4938000" />
+      <workItem from="1708049253510" duration="5034000" />
+      <workItem from="1708107884737" duration="7358000" />
+      <workItem from="1708117791545" duration="5018000" />
     </task>
     <servers />
   </component>

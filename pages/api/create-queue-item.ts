@@ -10,14 +10,19 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
         return;
     }
     if (req.method === 'POST') {
-        const {
+        let {
             queueId,
             name,
             description = "",
             deadline = null,
             link = "",
             color = 0,
+            queueItemId
         } = req.body;
+
+        if (!queueItemId) {
+            queueItemId = "";
+        }
 
         if (!name || !queueId) {
             res.status(400).json({message: 'Name is required'});
@@ -44,8 +49,14 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
             return;
         }
 
-        const queueItem = await prisma.queueItem.create({
-            data: {
+        const queueItem = await prisma.queueItem.upsert({
+            where: {
+                id: queueItemId,
+            },
+            update: {
+                name, description, deadline, link, color
+            },
+            create: {
                 User: {
                     connect: {
                         email: session.user?.email

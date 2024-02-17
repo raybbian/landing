@@ -1,8 +1,9 @@
 import {QueueItem as QueueItemType} from "@prisma/client";
-import {FormEvent, useState} from "react";
+import {FormEvent, useEffect, useState} from "react";
 import {allBgAccentColors, getBorderStatusColor, getTextStatusColor} from "@/lib/colors";
 import {FaCirclePlus} from "react-icons/fa6";
 import {status as statusType} from "@/lib/colors";
+import {queueItemOrdering} from "@/lib/sorting";
 
 
 type QueueItemFormData = {
@@ -16,19 +17,19 @@ type QueueItemFormData = {
 export default function QueueItem({queueItem, className, dbQueueItems, setDbQueueItems, queueId}: {
     queueItem?: QueueItemType,
     className?: string,
-    dbQueueItems: QueueItemType[],
-    setDbQueueItems: (queueItems: QueueItemType[]) => void,
+    dbQueueItems: Record<string, QueueItemType>,
+    setDbQueueItems: (queueItems: Record<string, QueueItemType>) => void,
     queueId?: string,
 }) {
     const [creating, setCreating] = useState(0);
     //0 -> dummy item (queueItem null -> dummy, queueItem nonNull -> actual), 1 -> creating (form), 2 -> loading transaction
     const [focusedSubform, setFocusedSubform] = useState("none");
     const [formData, setFormData] = useState<QueueItemFormData>({
-        name: "",
+        name: queueItem?.name || "",
         description: queueItem?.description || "",
         deadline: queueItem?.deadline || undefined,
         link: queueItem?.link || "",
-        color: 0,
+        color: queueItem?.color || 0,
     });
     const [formStatus, setFormStatus] = useState<{
         message: string,
@@ -38,8 +39,11 @@ export default function QueueItem({queueItem, className, dbQueueItems, setDbQueu
         type: "default",
     });
 
-    function handleFormSubmit(e: FormEvent<HTMLFormElement>) {
+    function createQueueItem(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
+        if (creating === 2) {
+            return;
+        }
 
         const {name, description, deadline, link, color} = formData;
         if (name === "") {
@@ -56,10 +60,31 @@ export default function QueueItem({queueItem, className, dbQueueItems, setDbQueu
             })
             return;
         }
+        if ((description?.length || 0) > 1000) {
+            setFormStatus({
+                message: "Description is too long!",
+                type: "error",
+            })
+            return;
+        }
+        if ((link?.length || 0) > 255) {
+            setFormStatus({
+                message: "Link is too long!",
+                type: "error",
+            })
+            return;
+        }
+        if ((color < 0 || color > 14)) {
+            setFormStatus({
+                message: "Invalid color!",
+                type: "error",
+            })
+            return;
+        }
 
         setCreating(2);
         setFormStatus({
-            message: "Creating item...",
+            message: "",
             type: "info",
         })
 
@@ -88,7 +113,23 @@ export default function QueueItem({queueItem, className, dbQueueItems, setDbQueu
                         message: "",
                         type: "default",
                     })
-                    setDbQueueItems([...dbQueueItems, data])
+
+                    let newDbQueueItems: Record<string, QueueItemType> = {...dbQueueItems}
+                    newDbQueueItems[data.id] = data;
+                    Object.values(newDbQueueItems).sort(
+                        (a, b) => queueItemOrdering(a, b)
+                    ).map((queueItem) => {
+                        newDbQueueItems[queueItem.id] = queueItem
+                    })
+                    setDbQueueItems(newDbQueueItems);
+
+                    setFormData({
+                        name: queueItem?.name || "",
+                        description: queueItem?.description || "",
+                        deadline: queueItem?.deadline || undefined,
+                        link: queueItem?.link || "",
+                        color: queueItem?.color || 0,
+                    })
                 })
             } else {
                 setCreating(1);
@@ -100,21 +141,10 @@ export default function QueueItem({queueItem, className, dbQueueItems, setDbQueu
         })
     }
 
-    function getStatus() {
-        if (creating === 0 && !queueItem)
-            return "dummy"
-        if (creating === 0 && !!queueItem)
-            return "view"
-        if (creating === 1)
-            return "form"
-        else // creating === 2
-            return "loading"
-    }
-
     if (!queueItem && creating === 0) {
         return (
             <div
-                className={"w-full h-36 border-[3px] border-ctp-surface0 bg-ctp-crust rounded-lg border-dashed grid place-items-center"}>
+                className={`${className} w-full h-36 border-[3px] border-ctp-surface0 bg-ctp-crust rounded-lg border-dashed grid place-items-center`}>
                 <FaCirclePlus
                     className={"text-ctp-surface0 hover:text-ctp-surface1 cursor-pointer"}
                     size={64}
@@ -124,92 +154,104 @@ export default function QueueItem({queueItem, className, dbQueueItems, setDbQueu
         )
     }
 
+    const innerContent = (
+        <>
+            <div
+                className={`flex-none w-full h-10 border-b-[1px] bg-ctp-surface0 border-ctp-surface0 rounded-t-lg px-3`}>
+                <input
+                    className={`w-full h-full focus:outline-none bg-ctp-surface0`}
+                    type={"text"}
+                    name={"name"}
+                    value={formData.name}
+                    onChange={(e) => {
+                        setFormData({...formData, name: e.target.value})
+                    }}
+                    placeholder={"Item name"}
+                    autoFocus={true}
+                    disabled={!!queueItem && creating === 0}
+                />
+            </div>
+            <textarea
+                className={`w-full h-full bg-ctp-mantle px-3 py-2 text-sm focus:outline-none resize-none ${creating !== 1 && "rounded-b-lg"}`}
+                name={"description"}
+                value={formData.description}
+                placeholder={"Description"}
+                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                disabled={!!queueItem && creating === 0}
+            />
+            {
+                (creating === 1) &&
+                <div
+                    className={"flex-none w-full h-8 flex flex-row border-t-[1px] border-ctp-surface0 rounded-b-lg"}>
+                    <div className={"flex-none w-[85%] h-full rounded-bl-lg flex flex-row"}>
+                        {focusedSubform === "color" &&
+                            <ColorPicker
+                                formData={formData}
+                                setFormData={setFormData}
+                                setFocusedSubform={setFocusedSubform}
+                                className={"flex-none"}
+                            />
+                        }
+                        {focusedSubform === "none" &&
+                            <>
+                                <div className={"flex-grow h-full rounded-bl-lg"}>
+                                    <input
+                                        className={"w-full h-full bg-ctp-mantle text-sm px-3 focus:outline-none rounded-bl-lg"}
+                                        type={"url"}
+                                        name={"link"}
+                                        placeholder={"Link"}
+                                        value={formData.link}
+                                        onChange={(e) => setFormData({...formData, link: e.target.value})}
+                                    />
+                                </div>
+                                <button
+                                    className={`aspect-square h-full bg-ctp-surface0 hover:bg-ctp-surface1 cursor-pointer grid place-items-center z-10`}
+                                    onClick={() => setFocusedSubform("color")}
+                                    type={"button"}
+                                >
+                                    <div
+                                        className={`h-1/2 aspect-square ${allBgAccentColors[formData.color]} rounded-full`}></div>
+                                </button>
+                                <div className={"flex-grow h-full"}>
+                                    <input
+                                        className={"w-full h-full bg-ctp-mantle text-sm px-2 focus:outline-none"}
+                                        type={"date"}
+                                        name={"deadline"}
+                                        value={formData.deadline?.toISOString().split('T')[0]}
+                                        onChange={(e) => setFormData({
+                                            ...formData,
+                                            deadline: new Date(e.target.value)
+                                        })}
+                                    />
+                                </div>
+                            </>
+                        }
+                    </div>
+                    <button
+                        className={"flex-grow h-full bg-ctp-surface0 hover:bg-ctp-surface1 rounded-br-lg text-sm"}
+                        type={"submit"}
+                    >
+                        {!queueItem ? "Add" : "Edit"}
+                    </button>
+                </div>
+            }
+        </>
+    )
+
     return (
         <div
-            className={`w-full h-36 border-[1px] ${getBorderStatusColor(formStatus.type)} bg-ctp-mantle rounded-lg relative`}>
-            <form
-                className={"w-full h-full flex flex-col justify-between"}
-                onSubmit={e => handleFormSubmit(e)}
-            >
-                <div
-                    className={`flex-none w-full h-10 border-b-[1px] bg-ctp-surface0 border-ctp-surface0 rounded-t-lg px-3`}>
-                    <input
-                        className={`w-full h-full focus:outline-none bg-ctp-surface0`}
-                        type={"text"}
-                        name={"name"}
-                        value={queueItem?.name || formData.name}
-                        onChange={(e) => {
-                            setFormData({...formData, name: e.target.value})
-                        }}
-                        placeholder={"Item name"}
-                        autoFocus={true}
-                        disabled={getStatus() == "view"}
-                    />
+            className={`${className} w-full h-36 border-[1px] ${getBorderStatusColor(formStatus.type)} bg-ctp-mantle rounded-lg relative`}>
+            {creating === 1 ?
+                <form
+                    className={"w-full h-full flex flex-col justify-between"}
+                    onSubmit={e => createQueueItem(e)}
+                >
+                    {innerContent}
+                </form> :
+                <div className={"w-full h-full flex flex-col justify-between"}>
+                    {innerContent}
                 </div>
-                <textarea
-                    className={`w-full h-full bg-ctp-mantle px-3 py-2 text-sm focus:outline-none resize-none ${getStatus() != "form" && "rounded-b-lg"}`}
-                    name={"description"}
-                    value={queueItem?.description || formData.description}
-                    placeholder={"Description"}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    disabled={getStatus() == "view"}
-                />
-                {(getStatus() == "form" || getStatus() == "loading") &&
-                    <div
-                        className={"flex-none w-full h-8 flex flex-row border-t-[1px] border-ctp-surface0 rounded-b-lg"}>
-                        <div className={"flex-none w-[85%] h-full rounded-bl-lg flex flex-row"}>
-                            {focusedSubform === "color" &&
-                                <ColorPicker
-                                    formData={formData}
-                                    setFormData={setFormData}
-                                    setFocusedSubform={setFocusedSubform}
-                                    className={"flex-none"}
-                                />
-                            }
-                            {focusedSubform === "none" &&
-                                <>
-                                    <div className={"flex-grow h-full rounded-bl-lg"}>
-                                        <input
-                                            className={"w-full h-full bg-ctp-mantle text-sm px-3 focus:outline-none rounded-bl-lg"}
-                                            type={"url"}
-                                            name={"link"}
-                                            placeholder={"Link"}
-                                            value={queueItem?.link || formData.link}
-                                            onChange={(e) => setFormData({...formData, link: e.target.value})}
-                                        />
-                                    </div>
-                                    <button
-                                        className={`aspect-square h-full bg-ctp-surface0 hover:bg-ctp-surface1 cursor-pointer grid place-items-center z-10`}
-                                        onClick={() => setFocusedSubform("color")}
-                                        type={"button"}
-                                    >
-                                        <div
-                                            className={`h-1/2 aspect-square ${allBgAccentColors[formData.color]} rounded-full`}></div>
-                                    </button>
-                                    <div className={"flex-grow h-full"}>
-                                        <input
-                                            className={"w-full h-full bg-ctp-mantle text-sm px-2 focus:outline-none"}
-                                            type={"date"}
-                                            name={"deadline"}
-                                            value={queueItem?.deadline?.toISOString().split('T')[0] || formData.deadline?.toISOString().split('T')[0]}
-                                            onChange={(e) => setFormData({
-                                                ...formData,
-                                                deadline: new Date(e.target.value)
-                                            })}
-                                        />
-                                    </div>
-                                </>
-                            }
-                        </div>
-                        <button
-                            className={"flex-grow h-full bg-ctp-surface0 hover:bg-ctp-surface1 rounded-br-lg text-sm"}
-                            type={"submit"}
-                        >
-                            {!queueItem ? "Add" : "Edit"}
-                        </button>
-                    </div>
-                }
-            </form>
+            }
             {formStatus.message.length > 0 &&
                 <p className={`absolute top-full mt-2 mr-2 right-0 text-sm ${getBorderStatusColor(formStatus.type)} ${getTextStatusColor(formStatus.type)}`}>{formStatus.message}</p>
             }
