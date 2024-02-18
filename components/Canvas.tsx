@@ -15,7 +15,7 @@ export default function Canvas({className}: {
     const [dbUserQueues, setDbUserQueues] = useState<Record<string, QueueType>>({});
 
     function getDbUserQueues() {
-        if (loadingData != 0) return;
+        if (loadingData != 0 || !session) return;
         setLoadingData(1);
 
         fetch('api/get-user-queues')
