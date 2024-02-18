@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="b7cdcb45-9cca-4ce9-bac1-41a60d5ced76" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/api/auth/[...nextauth].ts" beforeDir="false" afterPath="$PROJECT_DIR$/pages/api/auth/[...nextauth].ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,7 +86,7 @@
       <workItem from="1708117791545" duration="5232000" />
       <workItem from="1708216146696" duration="4478000" />
       <workItem from="1708221279664" duration="14037000" />
-      <workItem from="1708236175105" duration="1179000" />
+      <workItem from="1708236175105" duration="1807000" />
     </task>
     <servers />
   </component>
