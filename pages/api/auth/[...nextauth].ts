@@ -7,6 +7,10 @@ import prisma from '@/lib/prisma';
 const authHandler: NextApiHandler = (req, res) => NextAuth(req, res, options);
 export default authHandler;
 
+if (!process.env.GITHUB_ID || !process.env.GITHUB_SECRET) {
+    throw new Error('GITHUB_ID and GITHUB_SECRET must be provided');
+}
+
 export const options = {
     providers: [
         GitHubProvider({
