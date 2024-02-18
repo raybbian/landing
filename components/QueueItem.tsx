@@ -282,7 +282,7 @@ export default function QueueItem({queueItem, className, dbQueueItems, setDbQueu
             {!!queueItem && creating !== 1 ?
                 <div
                     className={`px-3 py-2 text-sm ${allTextAccentColors[formData.color]} flex flex-row justify-between`}>
-                    {!formData.deadline ? "No deadline." : `Due on ${formData.deadline.toDateString()}.`}
+                    {!formData.deadline ? "No deadline." : `Due on ${new Date(formData.deadline.getTime() + new Date().getTimezoneOffset() * 60000).toDateString()}.`}
                     <FaCheck
                         className={`${allTextAccentColors[formData.color]} cursor-pointer`}
                         size={18}
