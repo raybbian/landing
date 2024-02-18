@@ -17,7 +17,8 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
             deadline = null,
             link = "",
             color = 0,
-            queueItemId
+            queueItemId,
+            status = 0,
         } = req.body;
 
         if (!queueItemId) {
@@ -54,7 +55,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
                 id: queueItemId,
             },
             update: {
-                name, description, deadline, link, color
+                name, description, deadline, link, color, status
             },
             create: {
                 User: {

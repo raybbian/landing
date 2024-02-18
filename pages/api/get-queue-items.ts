@@ -27,6 +27,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
                     email: session.user?.email
                 },
                 queueId,
+                status: 0,
             },
             orderBy: {
                 dateCreated: 'asc'

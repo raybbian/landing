@@ -1,7 +1,7 @@
 import {QueueItem as QueueItemType} from "@prisma/client";
 import {FormEvent, useEffect, useState} from "react";
-import {allBgAccentColors, getBorderStatusColor, getTextStatusColor} from "@/lib/colors";
-import {FaCirclePlus} from "react-icons/fa6";
+import {allBgAccentColors, allTextAccentColors, getBorderStatusColor, getTextStatusColor} from "@/lib/colors";
+import {FaArrowUpRightFromSquare, FaCheck, FaCirclePlus, FaLink, FaPenToSquare, FaXmark} from "react-icons/fa6";
 import {status as statusType} from "@/lib/colors";
 import {queueItemOrdering} from "@/lib/sorting";
 
@@ -14,12 +14,13 @@ type QueueItemFormData = {
     color: number,
 }
 
-export default function QueueItem({queueItem, className, dbQueueItems, setDbQueueItems, queueId}: {
+export default function QueueItem({queueItem, className, dbQueueItems, setDbQueueItems, queueId, canEdit, ...rest}: {
     queueItem?: QueueItemType,
     className?: string,
     dbQueueItems: Record<string, QueueItemType>,
     setDbQueueItems: (queueItems: Record<string, QueueItemType>) => void,
     queueId?: string,
+    canEdit: boolean,
 }) {
     const [creating, setCreating] = useState(0);
     //0 -> dummy item (queueItem null -> dummy, queueItem nonNull -> actual), 1 -> creating (form), 2 -> loading transaction
@@ -27,7 +28,7 @@ export default function QueueItem({queueItem, className, dbQueueItems, setDbQueu
     const [formData, setFormData] = useState<QueueItemFormData>({
         name: queueItem?.name || "",
         description: queueItem?.description || "",
-        deadline: queueItem?.deadline || undefined,
+        deadline: !!queueItem?.deadline ? new Date(queueItem?.deadline) : undefined,
         link: queueItem?.link || "",
         color: queueItem?.color || 0,
     });
@@ -94,6 +95,7 @@ export default function QueueItem({queueItem, className, dbQueueItems, setDbQueu
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
+                queueItemId: queueItem?.id,
                 queueId,
                 name,
                 description,
@@ -126,7 +128,7 @@ export default function QueueItem({queueItem, className, dbQueueItems, setDbQueu
                     setFormData({
                         name: queueItem?.name || "",
                         description: queueItem?.description || "",
-                        deadline: queueItem?.deadline || undefined,
+                        deadline: !!queueItem?.deadline ? new Date(queueItem?.deadline) : undefined,
                         link: queueItem?.link || "",
                         color: queueItem?.color || 0,
                     })
@@ -141,14 +143,77 @@ export default function QueueItem({queueItem, className, dbQueueItems, setDbQueu
         })
     }
 
+    function completeQueueItem() {
+        const {name, description, deadline, link, color} = formData;
+
+        setFormStatus({
+            message: "",
+            type: "info",
+        })
+
+        fetch('api/create-queue-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                queueItemId: queueItem?.id,
+                queueId,
+                name,
+                description,
+                deadline,
+                link,
+                color,
+                status: 1,
+            })
+        }).then(response => {
+            if (response.status === 200) {
+                setFormData({
+                    name: "",
+                    color: 0,
+                })
+                setFormStatus({
+                    message: "",
+                    type: "default",
+                })
+
+                let newDbQueueItems: Record<string, QueueItemType> = {...dbQueueItems}
+                delete newDbQueueItems[queueItem?.id as string];
+                setDbQueueItems(newDbQueueItems);
+            } else {
+                setFormStatus({
+                    message: "Failed to delete item!",
+                    type: "error",
+                })
+            }
+        })
+    }
+
+    useEffect(() => {
+        setFormData({
+            name: queueItem?.name || "",
+            description: queueItem?.description || "",
+            deadline: !!queueItem?.deadline ? new Date(queueItem?.deadline) : undefined,
+            link: queueItem?.link || "",
+            color: queueItem?.color || 0,
+        })
+    }, [queueItem?.name, queueItem?.description, queueItem?.deadline, queueItem?.link, queueItem?.color])
+
     if (!queueItem && creating === 0) {
         return (
             <div
+                {...rest}
                 className={`${className} w-full h-36 border-[3px] border-ctp-surface0 bg-ctp-crust rounded-lg border-dashed grid place-items-center`}>
                 <FaCirclePlus
                     className={"text-ctp-surface0 hover:text-ctp-surface1 cursor-pointer"}
                     size={64}
-                    onClick={() => setCreating(1)}
+                    onClick={() => {
+                        setFormStatus({
+                            message: "",
+                            type: "success"
+                        })
+                        setCreating(1)
+                    }}
                 />
             </div>
         )
@@ -157,9 +222,9 @@ export default function QueueItem({queueItem, className, dbQueueItems, setDbQueu
     const innerContent = (
         <>
             <div
-                className={`flex-none w-full h-10 border-b-[1px] bg-ctp-surface0 border-ctp-surface0 rounded-t-lg px-3`}>
+                className={`flex-none w-full h-10 border-b-[1px] bg-ctp-mantle border-ctp-surface0 rounded-t-lg px-3 flex flex-row items-center gap-3`}>
                 <input
-                    className={`w-full h-full focus:outline-none bg-ctp-surface0`}
+                    className={`w-full h-full focus:outline-none bg-ctp-mantle`}
                     type={"text"}
                     name={"name"}
                     value={formData.name}
@@ -168,19 +233,63 @@ export default function QueueItem({queueItem, className, dbQueueItems, setDbQueu
                     }}
                     placeholder={"Item name"}
                     autoFocus={true}
-                    disabled={!!queueItem && creating === 0}
+                    disabled={!!queueItem && creating !== 1}
                 />
+                {!!queueItem && creating !== 1 && formData.link?.length != 0 &&
+                    <FaArrowUpRightFromSquare
+                        size={18}
+                        className={"text-ctp-overlay0 hover:text-ctp-overlay2 cursor-pointer"}
+                        onClick={() => window.open(formData.link, "_blank")}
+                    />
+                }
+                {canEdit &&
+                    <>
+                        {creating === 0 ?
+                            <FaPenToSquare
+                                size={18}
+                                className={"text-ctp-overlay0 hover:text-ctp-overlay2 cursor-pointer"}
+                                onClick={() => {
+                                    setFormStatus({
+                                        message: "",
+                                        type: "warning"
+                                    })
+                                    setCreating(1)
+                                }}
+                            /> :
+                            <FaXmark
+                                size={18}
+                                className={"text-ctp-overlay0 hover:text-ctp-overlay2 cursor-pointer"}
+                                onClick={() => {
+                                    setFormStatus({
+                                        message: "",
+                                        type: "default"
+                                    })
+                                    setCreating(0)
+                                }}
+                            />
+                        }
+                    </>
+                }
             </div>
             <textarea
-                className={`w-full h-full bg-ctp-mantle px-3 py-2 text-sm focus:outline-none resize-none ${creating !== 1 && "rounded-b-lg"}`}
+                className={`w-full h-full bg-ctp-crust px-3 py-2 text-sm focus:outline-none resize-none ${creating !== 1 && "rounded-b-lg"}`}
                 name={"description"}
                 value={formData.description}
                 placeholder={"Description"}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
-                disabled={!!queueItem && creating === 0}
+                disabled={!!queueItem && creating !== 1}
             />
-            {
-                (creating === 1) &&
+            {!!queueItem && creating !== 1 ?
+                <div
+                    className={`px-3 py-2 text-sm ${allTextAccentColors[formData.color]} flex flex-row justify-between`}>
+                    {!formData.deadline ? "No deadline." : `Due on ${formData.deadline.toDateString()}.`}
+                    <FaCheck
+                        className={`${allTextAccentColors[formData.color]} cursor-pointer`}
+                        size={18}
+                        onClick={() => completeQueueItem()}
+                    />
+                </div>
+                :
                 <div
                     className={"flex-none w-full h-8 flex flex-row border-t-[1px] border-ctp-surface0 rounded-b-lg"}>
                     <div className={"flex-none w-[85%] h-full rounded-bl-lg flex flex-row"}>
@@ -196,7 +305,7 @@ export default function QueueItem({queueItem, className, dbQueueItems, setDbQueu
                             <>
                                 <div className={"flex-grow h-full rounded-bl-lg"}>
                                     <input
-                                        className={"w-full h-full bg-ctp-mantle text-sm px-3 focus:outline-none rounded-bl-lg"}
+                                        className={"w-full h-full bg-ctp-crust text-sm px-3 focus:outline-none rounded-bl-lg"}
                                         type={"url"}
                                         name={"link"}
                                         placeholder={"Link"}
@@ -214,10 +323,10 @@ export default function QueueItem({queueItem, className, dbQueueItems, setDbQueu
                                 </button>
                                 <div className={"flex-grow h-full"}>
                                     <input
-                                        className={"w-full h-full bg-ctp-mantle text-sm px-2 focus:outline-none"}
+                                        className={"w-full h-full bg-ctp-crust text-sm px-2 focus:outline-none"}
                                         type={"date"}
                                         name={"deadline"}
-                                        value={formData.deadline?.toISOString().split('T')[0]}
+                                        value={formData?.deadline?.toISOString().split('T')[0]}
                                         onChange={(e) => setFormData({
                                             ...formData,
                                             deadline: new Date(e.target.value)
@@ -231,7 +340,7 @@ export default function QueueItem({queueItem, className, dbQueueItems, setDbQueu
                         className={"flex-grow h-full bg-ctp-surface0 hover:bg-ctp-surface1 rounded-br-lg text-sm"}
                         type={"submit"}
                     >
-                        {!queueItem ? "Add" : "Edit"}
+                        {!queueItem ? "Add" : "Save"}
                     </button>
                 </div>
             }
@@ -240,7 +349,8 @@ export default function QueueItem({queueItem, className, dbQueueItems, setDbQueu
 
     return (
         <div
-            className={`${className} w-full h-36 border-[1px] ${getBorderStatusColor(formStatus.type)} bg-ctp-mantle rounded-lg relative`}>
+            {...rest}
+            className={`${className} w-full h-36 border-[1px] ${getBorderStatusColor(formStatus.type)} bg-ctp-crust rounded-lg relative z-10`}>
             {creating === 1 ?
                 <form
                     className={"w-full h-full flex flex-col justify-between"}

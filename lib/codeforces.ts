@@ -1,4 +1,4 @@
-type CFProblem = {
+export type CFProblem = {
     contestId?: number;
     problemsetName?: string;
     index: string;
@@ -23,10 +23,10 @@ export async function getRandomProblem(lowerRating: number, upperRating: number,
     }
 
     //filter out problems matching criteria
-    problems.filter((problem: CFProblem) => {
+    problems = problems.filter((problem: CFProblem) => {
         if (problem.rating === undefined) return false;
         const withinRating = problem.rating >= lowerRating && problem.rating <= upperRating;
-        const hasTags = tags ? tags.every(tag => problem.tags.includes(tag)) : false;
+        const hasTags = tags ? tags.every(tag => problem.tags.includes(tag)) : true;
         return withinRating && hasTags;
     })
 

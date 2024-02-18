@@ -2,17 +2,22 @@ import Queue from "@/components/Queue";
 import {useSession} from "next-auth/react";
 import {useEffect, useState} from "react";
 import {Queue as QueueType} from "@prisma/client";
-import {FaFaceFrown} from "react-icons/fa6";
+import {FaCircleNotch, FaFaceFrown} from "react-icons/fa6";
 import {queueOrdering} from "@/lib/sorting";
+import {Flipped, Flipper} from "react-flip-toolkit";
 
 export default function Canvas({className}: {
     className?: string
 }) {
     const {data: session, status} = useSession();
 
+    const [loadingData, setLoadingData] = useState(0);
     const [dbUserQueues, setDbUserQueues] = useState<Record<string, QueueType>>({});
 
     function getDbUserQueues() {
+        if (loadingData != 0) return;
+        setLoadingData(1);
+
         fetch('api/get-user-queues')
             .then(response => {
                 if (response.status === 200) {
@@ -24,6 +29,7 @@ export default function Canvas({className}: {
                             newDbUserQueues[queue.id] = queue;
                         })
                         setDbUserQueues(newDbUserQueues);
+                        setLoadingData(2);
                     })
                 } else {
                     setTimeout(getDbUserQueues, 1000);
@@ -34,6 +40,14 @@ export default function Canvas({className}: {
     useEffect(() => {
         getDbUserQueues()
     }, [session]);
+
+    if (status === "loading" || loadingData === 1) {
+        return (
+            <div className={"w-full h-full grid place-items-center"}>
+                <FaCircleNotch className={"animate-spin text-ctp-surface0"} size={64}/>
+            </div>
+        )
+    }
 
     if (!session || session.user?.email === null) {
         return (
@@ -47,12 +61,40 @@ export default function Canvas({className}: {
     }
 
     return (
-        <div className={`${className} bg-ctp-crust flex flex-row gap-4 p-4 overflow-x-scroll`}>
-            {Object.keys(dbUserQueues).map((queueId) => (
-                <Queue queue={dbUserQueues[queueId]} key={queueId} dbUserQueues={dbUserQueues}
-                       setDbUserQueues={setDbUserQueues} className={"flex-none"}/>
-            ))}
-            <Queue dbUserQueues={dbUserQueues} setDbUserQueues={setDbUserQueues} className={"flex-none"}/>
+        <div className={`${className} bg-ctp-crust flex flex-row gap-4 p-4 overflow-x-scroll `}>
+            {Object.keys(dbUserQueues).map((queueId) => {
+                if (dbUserQueues[queueId].name === "Codeforces") {
+                    return (
+                        <Queue
+                            key={queueId}
+                            queue={dbUserQueues[queueId]}
+                            dbUserQueues={dbUserQueues}
+                            setDbUserQueues={setDbUserQueues}
+                            className={"flex-none"}
+                            queueItemEndpoint={"api/get-cf-queue-items"}
+                            canEdit={false}
+                        />
+                    )
+                }
+                return (
+                    <Queue
+                        key={queueId}
+                        queue={dbUserQueues[queueId]}
+                        dbUserQueues={dbUserQueues}
+                        setDbUserQueues={setDbUserQueues}
+                        className={"flex-none"}
+                        queueItemEndpoint={"api/get-queue-items"}
+                        canEdit={true}
+                    />
+                )
+            })}
+            <Queue
+                dbUserQueues={dbUserQueues}
+                setDbUserQueues={setDbUserQueues}
+                className={"flex-none"}
+                queueItemEndpoint={"api/get-queue-items"}
+                canEdit={true}
+            />
         </div>
     );
 }

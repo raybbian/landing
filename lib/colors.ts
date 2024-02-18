@@ -31,6 +31,23 @@ export const allBgAccentColors = [
     "bg-ctp-lavender",
 ]
 
+export const allTextAccentColors = [
+    "text-ctp-rosewater",
+    "text-ctp-flamingo",
+    "text-ctp-pink",
+    "text-ctp-mauve",
+    "text-ctp-red",
+    "text-ctp-maroon",
+    "text-ctp-peach",
+    "text-ctp-yellow",
+    "text-ctp-green",
+    "text-ctp-teal",
+    "text-ctp-sky",
+    "text-ctp-sapphire",
+    "text-ctp-blue",
+    "text-ctp-lavender",
+]
+
 export type status = "success" | "info" | "warning" | "error" | "default";
 
 export function getBorderStatusColor(status: status): string {
