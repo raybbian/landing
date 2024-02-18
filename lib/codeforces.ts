@@ -27,7 +27,8 @@ export async function getRandomProblem(lowerRating: number, upperRating: number,
         if (problem.rating === undefined) return false;
         const withinRating = problem.rating >= lowerRating && problem.rating <= upperRating;
         const hasTags = tags ? tags.every(tag => problem.tags.includes(tag)) : true;
-        return withinRating && hasTags;
+        const recentProblem = problem.contestId ? problem.contestId > 1500 : false;
+        return withinRating && hasTags && recentProblem;
     })
 
     const randomIndex = Math.floor(Math.random() * problems.length);
