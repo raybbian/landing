@@ -19,7 +19,7 @@ function AccountDropdown({showDropdown, setShowDropdown}: {
 
     return (
         <div
-            className={"absolute bg-ctp-mantle top-14 right-2 cursor-auto rounded-b-lg overflow-hidden border-[1px] border-t-0 border-ctp-surface0"}>
+            className={"z-20 absolute bg-ctp-mantle top-14 right-2 cursor-auto rounded-b-lg overflow-hidden border-[1px] border-t-0 border-ctp-surface0"}>
             {session && (
                 <div className={"w-full p-4"}>
                     <p className={"font-light"}>Signed in as:</p>

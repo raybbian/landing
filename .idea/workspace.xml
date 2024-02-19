@@ -6,8 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="b7cdcb45-9cca-4ce9-bac1-41a60d5ced76" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/codeforces.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/codeforces.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/api/get-cf-queue-items.ts" beforeDir="false" afterPath="$PROJECT_DIR$/pages/api/get-cf-queue-items.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Header.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,7 +91,7 @@
       <workItem from="1708240999743" duration="499000" />
       <workItem from="1708241858818" duration="543000" />
       <workItem from="1708303091076" duration="189000" />
-      <workItem from="1708303562024" duration="120000" />
+      <workItem from="1708303562024" duration="695000" />
     </task>
     <servers />
   </component>
