@@ -34,6 +34,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
             }
         });
 
+
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         let dateCreated;
@@ -44,10 +45,12 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
         }
         dateCreated.setHours(0, 0, 0, 0);
 
+        queueItems = queueItems.filter(item => item.status === 0);
+
         if (today.getTime() !== dateCreated.getTime()) {
-            const problem : CFProblemType = await getRandomProblem(2000, 2400);
+            const problem : CFProblemType = await getRandomProblem(1800, 2300);
             if (!problem) {
-                res.status(500).json({message: 'Failed to fetch problem'});
+                res.json(queueItems);
                 return;
             }
 
@@ -73,7 +76,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
             queueItems = [...queueItems, newEntry];
         }
-        res.json(queueItems.filter(item => item.status === 0));
+        res.json(queueItems);
     } else {
         res.status(405).json({message: 'Method Not Allowed'});
     }
