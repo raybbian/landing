@@ -163,8 +163,6 @@ export default function Queue({queue, className, dbUserQueues, setDbUserQueues, 
                         setDbQueueItems(newDbQueueItems)
                         setLoadingData(2)
                     })
-                } else {
-                    setTimeout(getQueueItems, 1000);
                 }
             })
     }

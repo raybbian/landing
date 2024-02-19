@@ -31,8 +31,6 @@ export default function Canvas({className}: {
                         setDbUserQueues(newDbUserQueues);
                         setLoadingData(2);
                     })
-                } else {
-                    setTimeout(getDbUserQueues, 1000);
                 }
             })
     }
