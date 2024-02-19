@@ -46,6 +46,10 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
         if (today.getTime() !== dateCreated.getTime()) {
             const problem : CFProblemType = await getRandomProblem(2000, 2400);
+            if (!problem) {
+                res.status(500).json({message: 'Failed to fetch problem'});
+                return;
+            }
 
             const newEntry = await prisma.queueItem.create({
                 data: {

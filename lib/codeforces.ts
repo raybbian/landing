@@ -14,7 +14,7 @@ export async function getRandomProblem(lowerRating: number, upperRating: number,
     const url = "https://codeforces.com/api/problemset.problems";
     const response = await fetch(url);
 
-    if (!response.ok) throw new Error(`Failed to fetch from ${url}`);
+    if (!response.ok) return null;
 
     const data = await response.json();
     let problems = data.result.problems;
