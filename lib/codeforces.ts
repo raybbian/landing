@@ -13,6 +13,9 @@ export type CFProblem = {
 export async function getRandomProblem(lowerRating: number, upperRating: number, tags?: string[]) {
     const url = "https://codeforces.com/api/problemset.problems";
     const response = await fetch(url);
+
+    if (!response.ok) throw new Error(`Failed to fetch from ${url}`);
+
     const data = await response.json();
     let problems = data.result.problems;
     let problemStatistics = data.result.problemStatistics;
