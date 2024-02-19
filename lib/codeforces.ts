@@ -14,9 +14,14 @@ export async function getRandomProblem(lowerRating: number, upperRating: number,
     const url = "https://codeforces.com/api/problemset.problems";
     const response = await fetch(url);
 
-    if (!response.ok) return null;
+    let data;
+    try {
+        data = await response.json();
+    } catch {
+        return null;
+    }
 
-    const data = await response.json();
+
     let problems = data.result.problems;
     let problemStatistics = data.result.problemStatistics;
 
