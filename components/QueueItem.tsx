@@ -272,7 +272,7 @@ export default function QueueItem({queueItem, className, dbQueueItems, setDbQueu
                 }
             </div>
             <textarea
-                className={`w-full h-full bg-ctp-crust px-3 py-2 text-sm focus:outline-none resize-none ${creating !== 1 && "rounded-b-lg"}`}
+                className={`w-full h-full bg-ctp-crust px-3 py-2 text-sm text-ctp-overlay1 placeholder-ctp-overlay0 focus:outline-none resize-none ${creating !== 1 && "rounded-b-lg"}`}
                 name={"description"}
                 value={formData.description}
                 placeholder={"Description"}
@@ -281,7 +281,7 @@ export default function QueueItem({queueItem, className, dbQueueItems, setDbQueu
             />
             {!!queueItem && creating !== 1 ?
                 <div
-                    className={`px-3 py-2 text-sm ${allTextAccentColors[formData.color]} flex flex-row justify-between`}>
+                    className={`px-3 py-2 text-sm flex flex-row justify-between`}>
                     {!formData.deadline ? "No deadline." : `Due on ${new Date(formData.deadline.getTime() + new Date().getTimezoneOffset() * 60000).toDateString()}.`}
                     <FaCheck
                         className={`${allTextAccentColors[formData.color]} cursor-pointer`}
