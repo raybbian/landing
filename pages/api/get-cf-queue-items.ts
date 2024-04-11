@@ -11,10 +11,17 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
         return;
     }
     if (req.method === 'GET') {
-        const queueId = req.query['queueId']
+        const queueId = <string | undefined>req.query['queueId']
+        const ratingLower = <string | undefined>req.query['ratingLower']
+        const ratingUpper = <string | undefined>req.query['ratingUpper']
+
 
         if (!queueId) {
             res.status(400).json({message: 'Queue ID is required'});
+            return;
+        }
+        if (!ratingLower || !ratingUpper) {
+            res.status(400).json({message: 'Rating range is required'});
             return;
         }
         if (Array.isArray(queueId)) {
@@ -48,7 +55,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
         queueItems = queueItems.filter(item => item.status === 0);
 
         if (today.getTime() !== dateCreated.getTime()) {
-            const problem : CFProblemType = await getRandomProblem(1800, 2300);
+            const problem : CFProblemType = await getRandomProblem(parseInt(ratingLower), parseInt(ratingUpper));
             if (!problem) {
                 res.json(queueItems);
                 return;

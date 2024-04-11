@@ -6,7 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="b7cdcb45-9cca-4ce9-bac1-41a60d5ced76" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/QueueItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/QueueItem.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/Canvas.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Canvas.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/Queue.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Queue.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/api/get-cf-queue-items.ts" beforeDir="false" afterPath="$PROJECT_DIR$/pages/api/get-cf-queue-items.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,7 +94,9 @@
       <workItem from="1708241858818" duration="543000" />
       <workItem from="1708303091076" duration="189000" />
       <workItem from="1708303562024" duration="2021000" />
-      <workItem from="1708461012661" duration="166000" />
+      <workItem from="1708461012661" duration="396000" />
+      <workItem from="1708913623507" duration="44000" />
+      <workItem from="1712877822378" duration="1427000" />
     </task>
     <servers />
   </component>

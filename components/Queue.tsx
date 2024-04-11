@@ -9,12 +9,12 @@ import {queueItemOrdering} from "@/lib/sorting";
 import {getRandomInt} from "@/lib/utils";
 import {Flipped, Flipper} from "react-flip-toolkit";
 
-export default function Queue({queue, className, dbUserQueues, setDbUserQueues, queueItemEndpoint, canEdit, ...rest}: {
+export default function Queue({queue, className, dbUserQueues, setDbUserQueues, queueType, canEdit, ...rest}: {
     queue?: QueueType,
     className?: string,
     dbUserQueues: Record<string, QueueType>,
     setDbUserQueues: (queues: Record<string, QueueType>) => void,
-    queueItemEndpoint: "api/get-queue-items" | "api/get-cf-queue-items",
+    queueType: "cf" | "normal",
     canEdit: boolean,
 }) {
     const {data: session, status} = useSession();
@@ -34,6 +34,13 @@ export default function Queue({queue, className, dbUserQueues, setDbUserQueues, 
         type: "default",
     });
     const [deleteStatus, setDeleteStatus] = useState(0); //1 -> not yet confirmed, 2 -> confirmed
+
+    let queueItemEndpoint: string;
+    if (queueType === "cf") {
+        queueItemEndpoint = "api/get-cf-queue-items";
+    } else {
+        queueItemEndpoint = "api/get-queue-items";
+    }
 
     function createQueue(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -145,9 +152,23 @@ export default function Queue({queue, className, dbUserQueues, setDbUserQueues, 
         if (!queue || loadingData != 0) return;
         setLoadingData(1);
 
-        const queryParams = {
-            queueId: queue.id,
+        let queryParams : Record<string, string> = {};
+        queryParams["queueId"] = queue.id;
+
+        if (queueType === "cf") {
+            const pattern = /\b\d+\b/g;
+            const match = queue.name.match(pattern) || [];
+            if (match.length !== 2) {
+                setFormStatus({
+                    message: "Bad CF rating range!",
+                    type: "error",
+                })
+                return;
+            }
+            queryParams["ratingLower"] = match[0];
+            queryParams["ratingUpper"] = match[1];
         }
+
         const queryString = new URLSearchParams(queryParams).toString();
 
         fetch(`${queueItemEndpoint}?${queryString}`)
@@ -319,7 +340,7 @@ export default function Queue({queue, className, dbUserQueues, setDbUserQueues, 
             </div>
             {creating === 1 &&
                 <button
-                    className={"w-full h-12 bg-ctp-surface0 hover:bg-ctp-surface1 rounded-b-lg"}
+                    className={"w-full h-12 flex-none bg-ctp-surface0 hover:bg-ctp-surface1 rounded-b-lg"}
                     type={"submit"}
                 >
                     {!queue ? "Create" : "Update"}

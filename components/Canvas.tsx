@@ -61,19 +61,6 @@ export default function Canvas({className}: {
     return (
         <div className={`${className} bg-ctp-crust flex flex-row gap-4 p-4 overflow-x-scroll `}>
             {Object.keys(dbUserQueues).map((queueId) => {
-                if (dbUserQueues[queueId].name === "Codeforces") {
-                    return (
-                        <Queue
-                            key={queueId}
-                            queue={dbUserQueues[queueId]}
-                            dbUserQueues={dbUserQueues}
-                            setDbUserQueues={setDbUserQueues}
-                            className={"flex-none"}
-                            queueItemEndpoint={"api/get-cf-queue-items"}
-                            canEdit={false}
-                        />
-                    )
-                }
                 return (
                     <Queue
                         key={queueId}
@@ -81,7 +68,7 @@ export default function Canvas({className}: {
                         dbUserQueues={dbUserQueues}
                         setDbUserQueues={setDbUserQueues}
                         className={"flex-none"}
-                        queueItemEndpoint={"api/get-queue-items"}
+                        queueType={(dbUserQueues[queueId].name.substring(0, 10) === "Codeforces") ? "cf" : "normal"}
                         canEdit={true}
                     />
                 )
@@ -90,7 +77,7 @@ export default function Canvas({className}: {
                 dbUserQueues={dbUserQueues}
                 setDbUserQueues={setDbUserQueues}
                 className={"flex-none"}
-                queueItemEndpoint={"api/get-queue-items"}
+                queueType={"normal"}
                 canEdit={true}
             />
         </div>
